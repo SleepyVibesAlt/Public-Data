@@ -255,33 +255,30 @@ local function obterListaJogadores()
     return lista
 end
 
-local PODERES_LISTA = {
-    "Dark Flames", "Cruel Sun", "Halloween Sword", "Yoru", "Plasma Orbs", 
-    "Undead Staff", "Sonic Barrage", "Rebound Blast", "sonic boom", 
-    "Super Sonic Wave", "Tesseract", "Tesla Turret", "Twin-Photon Blast", 
-    "Hyper Slash", "Photon Blast", "Sonic Twister", "Nuclear Spore", 
-    "Pine Burst", "Nature's Wrath", "Warp Bomb", "Time Trap", "Tempo Beam", 
-    "Fire Bomb", "Comet", "Combust", "Fire Shower", "Elysian Beam", 
-    "Shadow Sword", "Dark Hold", "Frost Staff", "Ice Disk", 
-    "Frost Fire Bomb", "Ultracold Aura", "Ice Spikes",
-    "Lava Katana", "Lava Ball", "Magam Fists", "Lava Dash", "Volcano Sentry", "Magma Spikes", "Nibiru",
-    "Bone Scythe", "Blaster", "Bones Barrage", "Flying Bone", "Bone Surge", "Twin Blasters", "Judgement Blast",
-    "Crystal Cleaver", "Crystal Mine", "Energy Crash", "Energy Crown", "Crystal Eruption", "Energy Crystal", "Crystal Surge",
-    "Unseen Hands", "Unseen Barrage", "Dark Duo", "Abyss", "Dark Arc",
-    "Light Saber", "Light Ball", "Light Orbs", "Blinding Light", "Shooting Star", "Light Speed", "Light Beam",
-    "Christmas Tree Sword", "Plantoid", "Spore Bombs", "Nature's Blessing", "Nuclear Spore",
-    "Frost Fire Ball", "Snow Ball", "Ultracold Aura",
-    "Thunder Staff", "Bolt", "Barrage", "Discharge", "Flying Nimbus", "Lighting Strike", "Storm",
-    "Tectonic Hamer", "Stone Throw", "Rocks Barrage", "Large Boulder", "Burrow", "Stone Henge", "Earth Spikes",
-    "Fire Sword", "Fire Ball", "Fire Fly",
-    "Hyper Sword", "Phonton Blast", "Twin-Photon Blash", "Orbital", "Tesseract", "Hyper Slash",
-    "Gravity Katana", "Heavy Infliction", "Tectonic Barrage", "Gravity Orb", "Tectonic Burst", "Zero Gravity", "Gravity Globe",
-    "Time Scepter", "Temporal Gate", "Warp Barrage", "Tempo Beam", "Time Trap", "Warp Bomb", "Grand Clock",
-    "Venom Blade", "Poison Bullet", "Acid Rain", "Venom Stream", "Hardened Venom", "Poison Demon", "Bubbling Venom",
-    "Devil Sword", "Evil Bullet", "Fangs Barrage", "Evil Flash", "Demon Orb", "Demon Lock", "Dark Tsunami",
-    "Space Gun", "Blackhole Orb", "Moon Splitter", "Asteroid Belt", "Meteor Jam", "Cosmic Remote", "Space Saucer",
-    "Sonic Blaster", "Sonic Twister", "Rebound Blast", "Rebound Teleport", "Sonic Boom"
+local PODERES_LISTA = {}
+
+local MagicFolder = game:GetService("ReplicatedStorage"):WaitForChild("Magic")
+
+-- List of abilities to exclude
+local excludedAbilities = {
+    ["Air Strike"] = true,
+    ["Jump"] = true,
+    ["Crate Rain"] = true,
+    ["Dash"] = true,
+    ["Size Toggle"] = true,
+    ["Rocket Launcher"] = true
 }
+
+for _, element in ipairs(MagicFolder:GetChildren()) do
+    -- Exclude Boss and Turret
+    if element.Name ~= "Boss" and element.Name ~= "Turret" then
+        for _, ability in ipairs(element:GetChildren()) do
+            if ability:IsA("ModuleScript") and not excludedAbilities[ability.Name] then
+                table.insert(PODERES_LISTA, ability.Name)
+            end
+        end
+    end
+end
 
 local VELOCIDADE_PADRAO = 100
 local ATIVADO_SPEED = false
