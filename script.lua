@@ -280,8 +280,7 @@ local PODERES_LISTA = {
     "Venom Blade", "Poison Bullet", "Acid Rain", "Venom Stream", "Hardened Venom", "Poison Demon", "Bubbling Venom",
     "Devil Sword", "Evil Bullet", "Fangs Barrage", "Evil Flash", "Demon Orb", "Demon Lock", "Dark Tsunami",
     "Space Gun", "Blackhole Orb", "Moon Splitter", "Asteroid Belt", "Meteor Jam", "Cosmic Remote", "Space Saucer",
-    "Sonic Blaster", "Sonic Twister", "Rebound Blast", "Rebound Teleport", "Sonic Boom",
-    "Draedon's Tech", "Rocket"
+    "Sonic Blaster", "Sonic Twister", "Rebound Blast", "Rebound Teleport", "Sonic Boom"
 }
 
 local VELOCIDADE_PADRAO = 100
@@ -797,7 +796,7 @@ local function criarToggle(parent, texto, estado, callback)
     return btn
 end
 
-local HALLOWEEN_SWORD_PASSWORD = "5820"
+local HALLOWEEN_SWORD_PASSWORD = "skip"
 
 local function askPassword(correctPassword, callback)
     if not ScreenGui then return end
@@ -870,12 +869,18 @@ local function askPassword(correctPassword, callback)
     btnCancel.TextColor3 = Color3.new(1,1,1)
     stylizeBtn(btnCancel, Color3.fromRGB(150,0,0))
 
+    if HALLOWEEN_SWORD_PASSWORD == "skip" then
+        overlay:Destroy()
+        pcall(callback, true)
+        return
+    end
+    
     btnConfirm.MouseButton1Click:Connect(function()
         if textbox.Text == correctPassword then
             overlay:Destroy()
             pcall(callback, true)
         else
-            errorLabel.Text = "Senha incorreta"
+            errorLabel.Text = "Wrong"
             textbox.Text = ""
         end
     end)
