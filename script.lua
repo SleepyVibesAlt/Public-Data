@@ -256,7 +256,7 @@ local function obterListaJogadores()
 end
 
 local PODERES_LISTA = {
-    "Dark Flames", "Cruel Sun", "Halloween Sword", "Draedron's Tech", "Yoru", "Plasma Orbs", 
+    "Dark Flames", "Cruel Sun", "Halloween Sword", "Yoru", "Plasma Orbs", 
     "Undead Staff", "Sonic Barrage", "Rebound Blast", "sonic boom", 
     "Super Sonic Wave", "Tesseract", "Tesla Turret", "Twin-Photon Blast", 
     "Hyper Slash", "Photon Blast", "Sonic Twister", "Nuclear Spore", 
@@ -281,7 +281,7 @@ local PODERES_LISTA = {
     "Devil Sword", "Evil Bullet", "Fangs Barrage", "Evil Flash", "Demon Orb", "Demon Lock", "Dark Tsunami",
     "Space Gun", "Blackhole Orb", "Moon Splitter", "Asteroid Belt", "Meteor Jam", "Cosmic Remote", "Space Saucer",
     "Sonic Blaster", "Sonic Twister", "Rebound Blast", "Rebound Teleport", "Sonic Boom",
-    "Draedron's Tech", "Rocket Launcher"
+    "Draedon's Tech", "Rocket"
 }
 
 local VELOCIDADE_PADRAO = 100
