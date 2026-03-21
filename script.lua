@@ -17,41 +17,41 @@ local function gRE()
     return ReplicatedStorage:FindFirstChild("RemoteEvent")
 end
 
-local ACTIVE_EFFECTS = {}
-local EFFECTS_CONFIG = {
+local EFEITOS_ATIVOS = {}
+local EFEITOS_CONFIG = {
     ["Tesla Turret"] = {
-        color = Color3.fromRGB(0, 150, 255),
-        type = "lightning",
-        intensity = 1.5,
-        speed = 2
+        cor = Color3.fromRGB(0, 150, 255),
+        tipo = "raios",
+        intensidade = 1.5,
+        velocidade = 2
     },
     ["Plasma Orbs"] = {
-        color = Color3.fromRGB(255, 100, 0),
-        type = "plasma",
-        intensity = 1.2,
-        speed = 1.8
+        cor = Color3.fromRGB(255, 100, 0),
+        tipo = "plasma",
+        intensidade = 1.2,
+        velocidade = 1.8
     },
     ["Dark Flames"] = {
-        color = Color3.fromRGB(100, 0, 100),
-        type = "flames",
-        intensity = 1.3,
-        speed = 1.5
+        cor = Color3.fromRGB(100, 0, 100),
+        tipo = "chamas",
+        intensidade = 1.3,
+        velocidade = 1.5
     },
     ["Cruel Sun"] = {
-        color = Color3.fromRGB(255, 200, 0),
-        type = "sun",
-        intensity = 1.4,
-        speed = 1
+        cor = Color3.fromRGB(255, 200, 0),
+        tipo = "sol",
+        intensidade = 1.4,
+        velocidade = 1
     },
     ["Frost Staff"] = {
-        color = Color3.fromRGB(0, 200, 255),
-        type = "ice",
-        intensity = 1.1,
-        speed = 1.2
+        cor = Color3.fromRGB(0, 200, 255),
+        tipo = "gelo",
+        intensidade = 1.1,
+        velocidade = 1.2
     }
 }
 
-local function createEffectsRemote()
+local function criarRemoteEfeitos()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     if not remotes then
         remotes = Instance.new("Folder")
@@ -59,35 +59,35 @@ local function createEffectsRemote()
         remotes.Parent = ReplicatedStorage
     end
     
-    if not remotes:FindFirstChild("VisualEffects") then
+    if not remotes:FindFirstChild("EfeitosVisuais") then
         local re = Instance.new("RemoteEvent")
-        re.Name = "VisualEffects"
+        re.Name = "EfeitosVisuais"
         re.Parent = remotes
     end
     
-    return remotes:FindFirstChild("VisualEffects")
+    return remotes:FindFirstChild("EfeitosVisuais")
 end
 
-local RemoteEffects = createEffectsRemote()
+local RemoteEfeitos = criarRemoteEfeitos()
 
-local function createLightningEffect(character, config)
+local function criarEfeitoRaios(character, config)
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     
     local rootPart = character.HumanoidRootPart
     
-    if not rootPart:FindFirstChild("EffectAttachment") then
+    if not rootPart:FindFirstChild("EfeitoAttachment") then
         local attachment = Instance.new("Attachment")
-        attachment.Name = "EffectAttachment"
+        attachment.Name = "EfeitoAttachment"
         attachment.Parent = rootPart
         
         local particleEmitter = Instance.new("ParticleEmitter")
         particleEmitter.Parent = attachment
         particleEmitter.Texture = "rbxasset://textures/Particles/sparkles_main.dds"
-        particleEmitter.Rate = 50 * config.intensity
+        particleEmitter.Rate = 50 * config.intensidade
         particleEmitter.Lifetime = NumberRange.new(0.5, 1.5)
-        particleEmitter.Speed = NumberRange.new(10 * config.speed)
+        particleEmitter.Speed = NumberRange.new(10 * config.velocidade)
         particleEmitter.Acceleration = Vector3.new(0, -5, 0)
-        particleEmitter.Color = ColorSequence.new(config.color)
+        particleEmitter.Color = ColorSequence.new(config.cor)
         particleEmitter.Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 0.5),
             NumberSequenceKeypoint.new(0.5, 0.3),
@@ -99,13 +99,13 @@ local function createLightningEffect(character, config)
     if not character:FindFirstChild("Highlight") then
         local highlight = Instance.new("Highlight")
         highlight.Parent = character
-        highlight.FillColor = config.color
+        highlight.FillColor = config.cor
         highlight.OutlineColor = Color3.new(1, 1, 1)
         highlight.FillTransparency = 0.3
         highlight.OutlineTransparency = 0.1
     else
         local highlight = character.Highlight
-        highlight.FillColor = config.color
+        highlight.FillColor = config.cor
         highlight.OutlineColor = Color3.new(1, 1, 1)
         highlight.FillTransparency = 0.3
         highlight.OutlineTransparency = 0.1
@@ -121,7 +121,7 @@ local function createLightningEffect(character, config)
                 info.Size = UDim2.new(1, -20, 0, 60)
                 info.Position = UDim2.new(0, 10, 0, 10)
                 info.BackgroundTransparency = 1
-                info.Text = "AUTO-ATTACK: teleports to the nearest player and attacks automatically. Use the button below to toggle."
+                info.Text = "AUTO-ATTACK: teleporta para o jogador mais próximo e ataca automaticamente. Use o botão abaixo para ativar/desativar."
                 info.Font = Enum.Font.SourceSans
                 info.TextSize = 14
                 info.TextColor3 = Color3.fromRGB(235,235,235)
@@ -135,13 +135,13 @@ local function createLightningEffect(character, config)
                 toggleBtn.Parent = ContentFrame
                 toggleBtn.Size = UDim2.new(0, 220, 0, 36)
                 toggleBtn.Position = UDim2.new(1, -230, 0, 0)
-                toggleBtn.Text = (G.AUTO_ATTACK and "Disable AUTO-ATTACK" or "Enable AUTO-ATTACK")
+                toggleBtn.Text = (G.AUTO_ATTACK and "Desativar AUTO-ATTACK" or "Ativar AUTO-ATTACK")
                 toggleBtn.Font = Enum.Font.SourceSansBold
                 toggleBtn.TextSize = 14
                 toggleBtn.BackgroundColor3 = G.AUTO_ATTACK and Color3.fromRGB(0,120,0) or Color3.fromRGB(120,0,0)
                 stylizeBtn(toggleBtn)
 
-                local CLICK_SPEED = 0.1
+                local VELOCIDADE_CLICK = 0.1
 
                 local function getCharacter()
                     return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -189,7 +189,7 @@ local function createLightningEffect(character, config)
                                     pcall(function() tool:Activate() end)
                                 end
 
-                                task.wait(CLICK_SPEED)
+                                task.wait(VELOCIDADE_CLICK)
                             else
                                 task.wait(0.25)
                             end
@@ -197,15 +197,15 @@ local function createLightningEffect(character, config)
                     end)
 
                     task.spawn(function()
-                        local spells = {"Dark Flames", "Draedron's Tech", "Yoru", "Plasma Orbs", "Undead Staff","Sonic Barrage", "Rebound Blast","sonic boom","Super Sonic Wave","Tesseract","Tesla Turret","Twin-Photon Blast","Hyper Slash","Photon Blast","Sonic Twister","Nuclear Spore","Pine Burst","Nature's Wrath","Warp Bomb","Time Trap","Tempo Beam","Fire Bomb","Comet","Combust","Fire Shower","Elysian Beam","Shadow Sword","Dark Hold"}
+                        local magias = {"Dark Flames", "Draedron's Tech", "Yoru", "Plasma Orbs", "Undead Staff","Sonic Barrage", "Rebound Rlast","sonic boom","Super Sonic Wave","Tesseract","Tesla Turret","Twin-Photon Blast","Hyper Slash","Photon Blast","Sonic Twister","Nuclear Spore","Pine Burst","Nature's Wrath","Warp Bomb","Time Trap","Tempo Beam","Fire Bomb","Comet","Combust","Fire Shower","Elysian Beam","Shadow Sword","Dark Hold"}
                         while true do
                             if G.AUTO_ATTACK then
                                 if RemoteEvent then
-                                    local randomSpell = spells[math.random(1, #spells)]
+                                    local magiaSorteada = magias[math.random(1, #magias)]
                                     pcall(function()
-                                        RemoteEvent:FireServer("equip_mystery_spell", randomSpell)
+                                        RemoteEvent:FireServer("equip_mystery_spell", magiaSorteada)
                                         local mousePos = LocalPlayer:GetMouse().Hit.p
-                                        RemoteEvent:FireServer("cast_spell", randomSpell, mousePos)
+                                        RemoteEvent:FireServer("cast_spell", magiaSorteada, mousePos)
                                     end)
                                 end
                                 task.wait(1)
@@ -218,19 +218,19 @@ local function createLightningEffect(character, config)
 
                 toggleBtn.MouseButton1Click:Connect(function()
                     G.AUTO_ATTACK = not G.AUTO_ATTACK
-                    toggleBtn.Text = (G.AUTO_ATTACK and "Disable AUTO-ATTACK" or "Enable AUTO-ATTACK")
+                    toggleBtn.Text = (G.AUTO_ATTACK and "Desativar AUTO-ATTACK" or "Ativar AUTO-ATTACK")
                     toggleBtn.BackgroundColor3 = G.AUTO_ATTACK and Color3.fromRGB(0,120,0) or Color3.fromRGB(120,0,0)
                     if G.AUTO_ATTACK then startLoops() end
                 end)
             end
-            createLightningEffect(LocalPlayer.Character, EFFECTS_CONFIG[effectType])
+            criarEfeitoRaios(LocalPlayer.Character, EFEITOS_CONFIG[tipoEfeito])
         else
-            removeEffect(LocalPlayer.Character)
+            removerEfeito(LocalPlayer.Character)
         end
     end
 end
 
-local function teleportTo(targetPlayer)
+local function teleportarPara(targetPlayer)
     if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         return false
     end
@@ -245,17 +245,17 @@ local function teleportTo(targetPlayer)
     return true
 end
 
-local function getPlayerList()
-    local list = {}
+local function obterListaJogadores()
+    local lista = {}
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-            table.insert(list, p)
+            table.insert(lista, p)
         end
     end
-    return list
+    return lista
 end
 
-local POWERS_LIST = {
+local PODERES_LISTA = {
     "Dark Flames", "Cruel Sun", "Halloween Sword", "Draedron's Tech", "Yoru", "Plasma Orbs", 
     "Undead Staff", "Sonic Barrage", "Rebound Blast", "sonic boom", 
     "Super Sonic Wave", "Tesseract", "Tesla Turret", "Twin-Photon Blast", 
@@ -264,17 +264,17 @@ local POWERS_LIST = {
     "Fire Bomb", "Comet", "Combust", "Fire Shower", "Elysian Beam", 
     "Shadow Sword", "Dark Hold", "Frost Staff", "Ice Disk", 
     "Frost Fire Bomb", "Ultracold Aura", "Ice Spikes",
-    "Lava Katana", "Lava Ball", "Magma Fists", "Lava Dash", "Volcano Sentry", "Magma Spikes", "Nibiru",
+    "Lava Katana", "Lava Ball", "Magam Fists", "Lava Dash", "Volcano Sentry", "Magma Spikes", "Nibiru",
     "Bone Scythe", "Blaster", "Bones Barrage", "Flying Bone", "Bone Surge", "Twin Blasters", "Judgement Blast",
     "Crystal Cleaver", "Crystal Mine", "Energy Crash", "Energy Crown", "Crystal Eruption", "Energy Crystal", "Crystal Surge",
     "Unseen Hands", "Unseen Barrage", "Dark Duo", "Abyss", "Dark Arc",
     "Light Saber", "Light Ball", "Light Orbs", "Blinding Light", "Shooting Star", "Light Speed", "Light Beam",
     "Christmas Tree Sword", "Plantoid", "Spore Bombs", "Nature's Blessing", "Nuclear Spore",
     "Frost Fire Ball", "Snow Ball", "Ultracold Aura",
-    "Thunder Staff", "Bolt", "Barrage", "Discharge", "Flying Nimbus", "Lightning Strike", "Storm",
-    "Tectonic Hammer", "Stone Throw", "Rocks Barrage", "Large Boulder", "Burrow", "Stone Henge", "Earth Spikes",
+    "Thunder Staff", "Bolt", "Barrage", "Discharge", "Flying Nimbus", "Lighting Strike", "Storm",
+    "Tectonic Hamer", "Stone Throw", "Rocks Barrage", "Large Boulder", "Burrow", "Stone Henge", "Earth Spikes",
     "Fire Sword", "Fire Ball", "Fire Fly",
-    "Hyper Sword", "Photon Blast", "Twin-Photon Blast", "Orbital", "Tesseract", "Hyper Slash",
+    "Hyper Sword", "Phonton Blast", "Twin-Photon Blash", "Orbital", "Tesseract", "Hyper Slash",
     "Gravity Katana", "Heavy Infliction", "Tectonic Barrage", "Gravity Orb", "Tectonic Burst", "Zero Gravity", "Gravity Globe",
     "Time Scepter", "Temporal Gate", "Warp Barrage", "Tempo Beam", "Time Trap", "Warp Bomb", "Grand Clock",
     "Venom Blade", "Poison Bullet", "Acid Rain", "Venom Stream", "Hardened Venom", "Poison Demon", "Bubbling Venom",
@@ -284,24 +284,24 @@ local POWERS_LIST = {
     "Draedron's Tech", "Rocket Launcher"
 }
 
-local DEFAULT_SPEED = 100
-local SPEED_ENABLED = false
-local SILENT_AIM_ENABLED = false
-local GOD_MODE_ENABLED = false
-local FLY_ENABLED = false
-local INF_JUMP_ENABLED = false
-local ESP_ENABLED = false
-local ESP_LINES = false
-local ESP_NAMES = false
-local ESP_HEALTH = false
-local AUTO_FARM_ENABLED = false
-local ANTI_AFK_ENABLED = false
-local KILL_AURA_ENABLED = false
-local NO_CLIP_ENABLED = false
-local NO_COOLDOWN_ENABLED = false
-local VISUAL_EFFECTS_ENABLED = false
-local SELECTED_EFFECT = "Tesla Turret"
-local LAUNCH_ENABLED = false
+local VELOCIDADE_PADRAO = 100
+local ATIVADO_SPEED = false
+local SILENT_AIM_ATIVADO = false
+local GOD_MODE_ATIVADO = false
+local FLY_ATIVADO = false
+local INF_JUMP_ATIVADO = false
+local ESP_ATIVADO = false
+local ESP_LINHAS = false
+local ESP_NOMES = false
+local ESP_VIDA = false
+local AUTO_FARM_ATIVADO = false
+local ANTI_AFK_ATIVADO = false
+local KILL_AURA_ATIVADO = false
+local NO_CLIP_ATIVADO = false
+local NO_COOLDOWN_ATIVADO = false
+local EFEITOS_VISUAIS_ATIVADO = false
+local EFEITO_SELECIONADO = "Tesla Turret"
+local LAUNCH_ATIVADO = false
 
 local FLY_SPEED = 50
 
@@ -311,7 +311,7 @@ local TOGGLE_ICON_ASSET = nil
 local TOGGLE_ICON_SIZE = UDim2.new(0, 20, 0, 20)
 local TOGGLE_DRAGGABLE = true
 local TOGGLE_SHOW_TEXT_IN_ICON = true
-local TOGGLE_LABEL_TEXT = "OPEN"
+local TOGGLE_LABEL_TEXT = "ABRIR"
 
 local LAUNCH_CONFIG = {
     TARGET_NAME = "kaiox_994:",
@@ -326,33 +326,22 @@ local function getHumanoidRootPart(character)
 end
 
 local function setupPhysics(character)
-    local rootPart = getHumanoidRootPart(character)
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    
+    local rootPart, humanoid = getHumanoidRootPart(character), character:FindFirstChildOfClass("Humanoid")
     if rootPart and humanoid then
         for _, v in pairs(rootPart:GetChildren()) do
             if v:IsA("BodyGyro") or v:IsA("BodyVelocity") then
                 v:Destroy()
             end
         end
-
-        local bodyGyro = Instance.new("BodyGyro", rootPart)
-        local bodyVelocity = Instance.new("BodyVelocity", rootPart)
-
-        bodyGyro.P = 9e4
-        bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-
-        bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        bodyVelocity.Velocity = Vector3.zero
-
+        local bodyGyro, bodyVelocity = Instance.new("BodyGyro", rootPart), Instance.new("BodyVelocity", rootPart)
+        bodyGyro.P, bodyGyro.MaxTorque = 9e4, Vector3.new(9e9, 9e9, 9e9)
+        bodyVelocity.MaxForce, bodyVelocity.Velocity = Vector3.new(9e9, 9e9, 9e9), Vector3.zero
         humanoid.PlatformStand = true
-
         for _, part in pairs(character:GetDescendants()) do
             if part:IsA("BasePart") then
                 part.CanCollide = false
             end
         end
-
         return bodyGyro, bodyVelocity
     end
 end
@@ -367,37 +356,26 @@ local function launchPlayer(targetPlayer)
             pcall(function()
                 local character = LocalPlayer.Character
                 local bodyGyro, bodyVelocity = setupPhysics(character)
-
                 if character and getHumanoidRootPart(character) and bodyVelocity then
                     if targetPlayer.Character and getHumanoidRootPart(targetPlayer.Character) then
                         local targetRoot = getHumanoidRootPart(targetPlayer.Character)
                         local targetHumanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
-
                         if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
                             for i = 1, 8 do
                                 if not launchingPlayers[targetPlayer.UserId] or not getHumanoidRootPart(character) or not bodyVelocity then break end
-
                                 getHumanoidRootPart(character).CFrame = targetRoot.CFrame * CFrame.Angles(
                                     math.rad(math.random(0, 360)),
                                     math.rad(math.random(0, 360)),
                                     math.rad(math.random(0, 360))
                                 )
-
-                                bodyVelocity.Velocity = Vector3.new(
-                                    LAUNCH_CONFIG.LAUNCH_FORCE,
-                                    LAUNCH_CONFIG.LAUNCH_FORCE,
-                                    LAUNCH_CONFIG.LAUNCH_FORCE
-                                )
-
+                                bodyVelocity.Velocity = Vector3.new(LAUNCH_CONFIG.LAUNCH_FORCE, LAUNCH_CONFIG.LAUNCH_FORCE, LAUNCH_CONFIG.LAUNCH_FORCE)
                                 RunService.Heartbeat:Wait()
                             end
-
                             bodyVelocity.Velocity = Vector3.zero
                         end
                     end
                 end
             end)
-
             task.wait(LAUNCH_CONFIG.VELOCITY)
         end
     end)
@@ -417,6 +395,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SuperMenuManusV43"
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
+
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -440,10 +419,7 @@ mfStroke.Color = Color3.fromRGB(40,40,40)
 mfStroke.Parent = MainFrame
 
 local mfGrad = Instance.new("UIGradient")
-mfGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(28,28,28)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(18,18,18))
-}
+mfGrad.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(28,28,28)), ColorSequenceKeypoint.new(1, Color3.fromRGB(18,18,18))}
 mfGrad.Rotation = 90
 mfGrad.Parent = MainFrame
 
@@ -471,10 +447,7 @@ titleCorner.Parent = titleBg
 
 local titleGrad = Instance.new("UIGradient")
 titleGrad.Parent = titleBg
-titleGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(50,50,50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))
-}
+titleGrad.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(50,50,50)), ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))}
 titleGrad.Rotation = 90
 
 Title.Parent = titleBg
@@ -512,14 +485,12 @@ ToggleButton.Text = ""
 
 local toggleCorner = Instance.new("UICorner")
 toggleCorner.Parent = ToggleButton
-
 local function updateToggleCorner()
     local sizeX = ToggleButton.AbsoluteSize.X
     local sizeY = ToggleButton.AbsoluteSize.Y
     local radius = math.floor(math.min(sizeX, sizeY) / 2)
     toggleCorner.CornerRadius = UDim.new(0, radius)
 end
-
 ToggleButton:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateToggleCorner)
 task.defer(updateToggleCorner)
 
@@ -531,10 +502,7 @@ toggleStroke.Transparency = 1
 
 local toggleGrad = Instance.new("UIGradient")
 toggleGrad.Parent = ToggleButton
-toggleGrad.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,30)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(20,20,20))
-}
+toggleGrad.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(30,30,30)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20,20,20))}
 toggleGrad.Rotation = 90
 
 local Glow = Instance.new("Frame")
@@ -545,74 +513,47 @@ Glow.Position = UDim2.new(0.5, 0, 0.5, 0)
 Glow.Size = UDim2.new(0.9, 0, 0.9, 0)
 Glow.BackgroundTransparency = 1
 Glow.ZIndex = ToggleButton.ZIndex
-
 local glowCorner = Instance.new("UICorner")
 glowCorner.Parent = Glow
-
 local function updateGlowCorner()
     local sizeX = ToggleButton.AbsoluteSize.X * 0.9
     local sizeY = ToggleButton.AbsoluteSize.Y * 0.9
     local radius = math.floor(math.min(sizeX, sizeY) / 2)
     glowCorner.CornerRadius = UDim.new(0, radius)
 end
-
 ToggleButton:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateGlowCorner)
 task.defer(updateGlowCorner)
-
 local glowStroke = Instance.new("UIStroke")
 glowStroke.Parent = Glow
 glowStroke.Thickness = 1
 glowStroke.Color = Color3.fromRGB(75,75,75)
 glowStroke.Transparency = 1
-
 Glow.ZIndex = ToggleButton.ZIndex - 1
 
-local arc = Instance.new("UIAspectRatioConstraint")
-arc.Parent = ToggleButton
-arc.AspectRatio = 1
+local arc = Instance.new("UIAspectRatioConstraint") arc.Parent = ToggleButton arc.AspectRatio = 1
 
 local pulseTween = nil
 local pulseInfo = TweenInfo.new(1.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
-
 local function startPulse()
-    if pulseTween then
-        pcall(function() pulseTween:Play() end)
-        return
-    end
-    pulseTween = TweenService:Create(glowStroke, pulseInfo, {
-        Transparency = 0.6,
-        Thickness = 1
-    })
+    if pulseTween then pcall(function() pulseTween:Play() end) return end
+    pulseTween = TweenService:Create(glowStroke, pulseInfo, {Transparency = 0.6, Thickness = 1})
     pcall(function() pulseTween:Play() end)
 end
-
 local function stopPulse()
-    if pulseTween then
-        pcall(function()
-            pulseTween:Cancel()
-            pulseTween = nil
-            glowStroke.Transparency = 1
-            glowStroke.Thickness = 1
-        end)
-    end
+    if pulseTween then pcall(function() pulseTween:Cancel() pulseTween = nil glowStroke.Transparency = 1 glowStroke.Thickness = 1 end) end
 end
 
 do
     local hoverTweenInfo = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local uiScale = Instance.new("UIScale")
-    uiScale.Parent = ToggleButton
-    uiScale.Scale = 1
-
+    local uiScale = Instance.new("UIScale") uiScale.Parent = ToggleButton uiScale.Scale = 1
     local normalStroke = toggleStroke.Color
     local hoverColor = ToggleButton.BackgroundColor3:lerp(Color3.fromRGB(70,70,70), 0.2)
-
     ToggleButton.MouseEnter:Connect(function()
         pcall(function()
             TweenService:Create(uiScale, hoverTweenInfo, {Scale = 1.12}):Play()
             TweenService:Create(toggleStroke, hoverTweenInfo, {Color = hoverColor}):Play()
         end)
     end)
-
     ToggleButton.MouseLeave:Connect(function()
         pcall(function()
             TweenService:Create(uiScale, hoverTweenInfo, {Scale = 1}):Play()
@@ -621,20 +562,52 @@ do
     end)
 end
 
--- Drag system
+if TOGGLE_ICON_ASSET then
+    local icon = Instance.new("ImageLabel")
+    icon.Name = "ToggleIcon"
+    icon.Parent = ToggleButton
+    icon.Size = TOGGLE_ICON_SIZE
+    icon.AnchorPoint = Vector2.new(0.5, 0.5)
+    icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    icon.BackgroundTransparency = 1
+    icon.Image = TOGGLE_ICON_ASSET
+    local icorner = Instance.new("UICorner")
+    icorner.Parent = icon
+    local function updateIconCorner()
+        local sizeX = icon.AbsoluteSize.X
+        local sizeY = icon.AbsoluteSize.Y
+        local radius = math.floor(math.min(sizeX, sizeY) / 2)
+        icorner.CornerRadius = UDim.new(0, radius)
+    end
+    icon:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateIconCorner)
+    task.defer(updateIconCorner)
+    ToggleButton.Text = ""
+    if TOGGLE_SHOW_TEXT_IN_ICON then
+        local label = Instance.new("TextLabel")
+        label.Name = "ToggleIconLabel"
+        label.Parent = ToggleButton
+        label.Size = UDim2.new(1,0,1,0)
+        label.BackgroundTransparency = 1
+        label.Text = TOGGLE_LABEL_TEXT
+        label.TextColor3 = Color3.fromRGB(245,245,245)
+        label.Font = Enum.Font.GothamSemibold
+        label.TextScaled = true
+        label.TextWrapped = true
+        label.TextXAlignment = Enum.TextXAlignment.Center
+        label.TextYAlignment = Enum.TextYAlignment.Center
+        label.ZIndex = icon.ZIndex + 1
+    end
+else
+    ToggleButton.TextXAlignment = Enum.TextXAlignment.Center
+end
+
 do
     local dragging = false
     local dragStart, startPos
-
     local function update(input)
         if not dragging then return end
         local delta = input.Position - dragStart
-        ToggleButton.Position = UDim2.new(
-            startPos.X.Scale,
-            startPos.X.Offset + delta.X,
-            startPos.Y.Scale,
-            startPos.Y.Offset + delta.Y
-        )
+        ToggleButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 
     ToggleButton.InputBegan:Connect(function(input)
@@ -642,11 +615,8 @@ do
             dragging = true
             dragStart = input.Position
             startPos = ToggleButton.Position
-
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
     end)
@@ -660,11 +630,10 @@ end
 
 ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
-
     if not TOGGLE_ICON_ASSET then
         ToggleButton.Text = ""
         if centerLabel then
-            centerLabel.Text = MainFrame.Visible and "CLOSE" or (TOGGLE_LABEL_TEXT or "OPEN")
+            centerLabel.Text = MainFrame.Visible and "FECHAR" or (TOGGLE_LABEL_TEXT or "ABRIR")
         end
     end
 end)
@@ -713,11 +682,11 @@ local function stylizeBtn(btn, baseColor)
     end)
 end
 
-local function createTabButton(name, pos, total)
+local function criarAbaBtn(nome, pos, total)
     local btn = Instance.new("TextButton")
     btn.Parent = TabButtons
     btn.Size = UDim2.new(0, 120, 1, 0)
-    btn.Text = name
+    btn.Text = nome
     btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.SourceSansBold
@@ -729,15 +698,10 @@ local function createTabButton(name, pos, total)
     return btn
 end
 
-local tabs = {
-    "Powers", "Combat", "Chaos", "Movement", "Farm", 
-    "Visual", "Map", "Effects", "Teleport", 
-    "Void Launch", "Updates", "Website", "Owner Info"
-}
-
-local tabButtons = {}
-for i, name in ipairs(tabs) do
-    tabButtons[name] = createTabButton(name, i-1, #tabs)
+local abas = {"Poderes", "Combate", "Caos", "Movimento", "Farm", "Visual", "mapa", "Efeitos", "Teleporte", "Void Launch", "Atualizações", "Site", "Informações do Dono"}
+local botoesAbas = {}
+for i, nome in ipairs(abas) do
+    botoesAbas[nome] = criarAbaBtn(nome, i-1, #abas)
 end
 
 local RGB_ENABLED = true
@@ -751,10 +715,8 @@ local function enableRGB(enable)
         rgbConnection = RunService.RenderStepped:Connect(function(dt)
             rgbHue = (rgbHue + dt * RGB_SPEED) % 1
             local c = Color3.fromHSV(rgbHue, 1, 1)
-
             if mfStroke then pcall(function() mfStroke.Color = c end) end
             if titleBg then pcall(function() titleBg.BackgroundColor3 = c:lerp(Color3.fromRGB(35,35,35), 0.7) end) end
-
             if TabButtons then
                 for _, child in pairs(TabButtons:GetChildren()) do
                     if child:IsA("TextButton") then
@@ -763,25 +725,19 @@ local function enableRGB(enable)
                     end
                 end
             end
-
             local tstroke = ToggleButton and ToggleButton:FindFirstChildOfClass("UIStroke")
             if tstroke then pcall(function() tstroke.Color = c end) end
             if glowStroke then pcall(function() glowStroke.Color = c end) end
-
-            if centerLabel then
-                pcall(function()
-                    local lum = 0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B
-                    centerLabel.TextColor3 = lum > 0.6 and Color3.fromRGB(10,10,10) or Color3.fromRGB(245,245,245)
-                end)
-            end
+            if centerLabel then pcall(function()
+                local lum = 0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B
+                centerLabel.TextColor3 = lum > 0.6 and Color3.fromRGB(10,10,10) or Color3.fromRGB(245,245,245)
+            end) end
         end)
     elseif not enable and rgbConnection then
         rgbConnection:Disconnect()
         rgbConnection = nil
-
         if mfStroke then mfStroke.Color = Color3.fromRGB(40,40,40) end
         if titleBg then titleBg.BackgroundColor3 = Color3.fromRGB(35,35,35) end
-
         if TabButtons then
             for _, child in pairs(TabButtons:GetChildren()) do
                 if child:IsA("TextButton") then
@@ -790,7 +746,6 @@ local function enableRGB(enable)
                 end
             end
         end
-
         local tstroke = ToggleButton and ToggleButton:FindFirstChildOfClass("UIStroke")
         if tstroke then tstroke.Color = Color3.fromRGB(50,50,50) end
     end
@@ -813,31 +768,31 @@ ContentFrame.Position = UDim2.new(0, 10, 0, 85)
 ContentFrame.Size = UDim2.new(1, -20, 1, -95)
 ContentFrame.BackgroundTransparency = 1
 
-local function clearContent()
+local function limparConteudo()
     for _, child in pairs(ContentFrame:GetChildren()) do
         child:Destroy()
     end
 end
 
-local function createToggle(parent, text, state, callback)
+local function criarToggle(parent, texto, estado, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = parent
     btn.Size = UDim2.new(1, 0, 0, 35)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 16
     
-    local function update()
-        btn.Text = text .. ": " .. (state and "ENABLED" or "DISABLED")
-        btn.BackgroundColor3 = state and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(120, 0, 0)
+    local function atualizar()
+        btn.Text = texto .. ": " .. (estado and "ATIVADO" or "DESATIVADO")
+        btn.BackgroundColor3 = estado and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(120, 0, 0)
     end
     
     btn.MouseButton1Click:Connect(function()
-        state = not state
-        update()
-        callback(state)
+        estado = not estado
+        atualizar()
+        callback(estado)
     end)
     
-    update()
+    atualizar()
     stylizeBtn(btn)
     return btn
 end
@@ -863,17 +818,14 @@ local function askPassword(correctPassword, callback)
     panel.Position = UDim2.new(0.5, -160, 0.5, -70)
     panel.BackgroundColor3 = Color3.fromRGB(36,36,36)
     panel.BorderSizePixel = 0
-
-    local pc = Instance.new("UICorner")
-    pc.CornerRadius = UDim.new(0,8)
-    pc.Parent = panel
+    local pc = Instance.new("UICorner") pc.CornerRadius = UDim.new(0,8) pc.Parent = panel
 
     local label = Instance.new("TextLabel")
     label.Parent = panel
     label.Size = UDim2.new(1, -20, 0, 24)
     label.Position = UDim2.new(0, 10, 0, 10)
     label.BackgroundTransparency = 1
-    label.Text = "Enter password to unlock:"
+    label.Text = "Insira a senha para desbloquear:"
     label.Font = Enum.Font.SourceSans
     label.TextSize = 14
     label.TextColor3 = Color3.new(1,1,1)
@@ -887,7 +839,8 @@ local function askPassword(correctPassword, callback)
     textbox.Font = Enum.Font.SourceSans
     textbox.TextSize = 14
     textbox.ClearTextOnFocus = true
-    textbox.PlaceholderText = "Password..."
+    textbox.Text = ""
+    textbox.PlaceholderText = "Senha..."
 
     local errorLabel = Instance.new("TextLabel")
     errorLabel.Parent = panel
@@ -903,7 +856,7 @@ local function askPassword(correctPassword, callback)
     btnConfirm.Parent = panel
     btnConfirm.Size = UDim2.new(0.5, -15, 0, 34)
     btnConfirm.Position = UDim2.new(0, 10, 1, -44)
-    btnConfirm.Text = "Confirm"
+    btnConfirm.Text = "Confirmar"
     btnConfirm.BackgroundColor3 = Color3.fromRGB(0,150,0)
     btnConfirm.TextColor3 = Color3.new(1,1,1)
     stylizeBtn(btnConfirm, Color3.fromRGB(0,150,0))
@@ -912,7 +865,7 @@ local function askPassword(correctPassword, callback)
     btnCancel.Parent = panel
     btnCancel.Size = UDim2.new(0.5, -15, 0, 34)
     btnCancel.Position = UDim2.new(0.5, 5, 1, -44)
-    btnCancel.Text = "Cancel"
+    btnCancel.Text = "Cancelar"
     btnCancel.BackgroundColor3 = Color3.fromRGB(150,0,0)
     btnCancel.TextColor3 = Color3.new(1,1,1)
     stylizeBtn(btnCancel, Color3.fromRGB(150,0,0))
@@ -922,7 +875,7 @@ local function askPassword(correctPassword, callback)
             overlay:Destroy()
             pcall(callback, true)
         else
-            errorLabel.Text = "Incorrect password"
+            errorLabel.Text = "Senha incorreta"
             textbox.Text = ""
         end
     end)
@@ -931,6 +884,79 @@ local function askPassword(correctPassword, callback)
         overlay:Destroy()
         pcall(callback, false)
     end)
+end
+
+local function showPoderes()
+    limparConteudo()
+
+    -- remover TextBoxes legados (caso uma versão anterior tenha deixado o código na GUI)
+    pcall(function()
+        if ScreenGui then
+            for _, desc in pairs(ScreenGui:GetDescendants()) do
+                if desc:IsA("TextBox") and desc.MultiLine then
+                    if #tostring(desc.Text) > 50 then
+                        desc:Destroy()
+                    end
+                end
+            end
+        end
+    end)
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Parent = ContentFrame
+    scroll.Size = UDim2.new(1, 0, 1, 0)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, (#PODERES_LISTA + 1) * 40)
+    scroll.ScrollBarThickness = 5
+    scroll.BackgroundTransparency = 1
+    
+    local list = Instance.new("UIListLayout")
+    list.Parent = scroll
+    list.Padding = UDim.new(0, 5)
+    for _, nome in ipairs(PODERES_LISTA) do
+        local btn = Instance.new("TextButton")
+        btn.Parent = scroll
+        btn.Size = UDim2.new(1, -10, 0, 30)
+        btn.Text = nome
+        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        btn.TextColor3 = Color3.new(1, 1, 1)
+        stylizeBtn(btn, Color3.fromRGB(50,50,50))
+        btn.MouseButton1Click:Connect(function()
+            local RE = gRE()
+            if nome == "Halloween Sword" then
+                askPassword(HALLOWEEN_SWORD_PASSWORD, function(ok)
+                    if ok then
+                        if RE then RE:FireServer("equip_mystery_spell", nome) end
+                    end
+                end)
+            else
+                if RE then RE:FireServer("equip_mystery_spell", nome) end
+            end
+        end)
+    end
+end
+
+local function showCombate()
+    limparConteudo()
+    local list = Instance.new("UIListLayout")
+    list.Parent = ContentFrame
+    list.Padding = UDim.new(0, 8)
+    ----------aba conbate---------------------------
+    local betaTagCombate = Instance.new("TextLabel")
+    betaTagCombate.Parent = ContentFrame
+    betaTagCombate.Size = UDim2.new(0, 120, 0, 24)
+    betaTagCombate.Position = UDim2.new(1, -130, 0, 10)
+    betaTagCombate.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+    betaTagCombate.TextColor3 = Color3.fromRGB(255,255,255)
+    betaTagCombate.Font = Enum.Font.SourceSansBold
+    betaTagCombate.TextSize = 14
+    betaTagCombate.Text = "BETA"
+    betaTagCombate.TextXAlignment = Enum.TextXAlignment.Center
+    betaTagCombate.TextYAlignment = Enum.TextYAlignment.Center
+    local betaCornerCombate = Instance.new("UICorner") betaCornerCombate.CornerRadius = UDim.new(0,6) betaCornerCombate.Parent = betaTagCombate
+    ------------------------------------------------------
+    criarToggle(ContentFrame, "ULTRA NO COOLDOWN (Agressivo)", NO_COOLDOWN_ATIVADO, function(v) NO_COOLDOWN_ATIVADO = v end)
+    criarToggle(ContentFrame, "SILENT AIM (Mira Invisível)", SILENT_AIM_ATIVADO, function(v) SILENT_AIM_ATIVADO = v end)
+    criarToggle(ContentFrame, "KILL AURA", KILL_AURA_ATIVADO, function(v) KILL_AURA_ATIVADO = v end)
+    criarToggle(ContentFrame, "GOD MODE", GOD_MODE_ATIVADO, function(v) GOD_MODE_ATIVADO = v end)
 end
 
 local function showMovimento()
