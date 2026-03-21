@@ -1,6 +1,3 @@
- Output   Browser Output
-
-                
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -20,41 +17,41 @@ local function gRE()
     return ReplicatedStorage:FindFirstChild("RemoteEvent")
 end
 
-local EFEITOS_ATIVOS = {}
-local EFEITOS_CONFIG = {
+local ACTIVE_EFFECTS = {}
+local EFFECTS_CONFIG = {
     ["Tesla Turret"] = {
-        cor = Color3.fromRGB(0, 150, 255),
-        tipo = "raios",
-        intensidade = 1.5,
-        velocidade = 2
+        color = Color3.fromRGB(0, 150, 255),
+        type = "lightning",
+        intensity = 1.5,
+        speed = 2
     },
     ["Plasma Orbs"] = {
-        cor = Color3.fromRGB(255, 100, 0),
-        tipo = "plasma",
-        intensidade = 1.2,
-        velocidade = 1.8
+        color = Color3.fromRGB(255, 100, 0),
+        type = "plasma",
+        intensity = 1.2,
+        speed = 1.8
     },
     ["Dark Flames"] = {
-        cor = Color3.fromRGB(100, 0, 100),
-        tipo = "chamas",
-        intensidade = 1.3,
-        velocidade = 1.5
+        color = Color3.fromRGB(100, 0, 100),
+        type = "flames",
+        intensity = 1.3,
+        speed = 1.5
     },
     ["Cruel Sun"] = {
-        cor = Color3.fromRGB(255, 200, 0),
-        tipo = "sol",
-        intensidade = 1.4,
-        velocidade = 1
+        color = Color3.fromRGB(255, 200, 0),
+        type = "sun",
+        intensity = 1.4,
+        speed = 1
     },
     ["Frost Staff"] = {
-        cor = Color3.fromRGB(0, 200, 255),
-        tipo = "gelo",
-        intensidade = 1.1,
-        velocidade = 1.2
+        color = Color3.fromRGB(0, 200, 255),
+        type = "ice",
+        intensity = 1.1,
+        speed = 1.2
     }
 }
 
-local function criarRemoteEfeitos()
+local function createEffectsRemote()
     local remotes = ReplicatedStorage:FindFirstChild("Remotes")
     if not remotes then
         remotes = Instance.new("Folder")
@@ -62,35 +59,35 @@ local function criarRemoteEfeitos()
         remotes.Parent = ReplicatedStorage
     end
     
-    if not remotes:FindFirstChild("EfeitosVisuais") then
+    if not remotes:FindFirstChild("VisualEffects") then
         local re = Instance.new("RemoteEvent")
-        re.Name = "EfeitosVisuais"
+        re.Name = "VisualEffects"
         re.Parent = remotes
     end
     
-    return remotes:FindFirstChild("EfeitosVisuais")
+    return remotes:FindFirstChild("VisualEffects")
 end
 
-local RemoteEfeitos = criarRemoteEfeitos()
+local RemoteEffects = createEffectsRemote()
 
-local function criarEfeitoRaios(character, config)
+local function createLightningEffect(character, config)
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     
     local rootPart = character.HumanoidRootPart
     
-    if not rootPart:FindFirstChild("EfeitoAttachment") then
+    if not rootPart:FindFirstChild("EffectAttachment") then
         local attachment = Instance.new("Attachment")
-        attachment.Name = "EfeitoAttachment"
+        attachment.Name = "EffectAttachment"
         attachment.Parent = rootPart
         
         local particleEmitter = Instance.new("ParticleEmitter")
         particleEmitter.Parent = attachment
         particleEmitter.Texture = "rbxasset://textures/Particles/sparkles_main.dds"
-        particleEmitter.Rate = 50 * config.intensidade
+        particleEmitter.Rate = 50 * config.intensity
         particleEmitter.Lifetime = NumberRange.new(0.5, 1.5)
-        particleEmitter.Speed = NumberRange.new(10 * config.velocidade)
+        particleEmitter.Speed = NumberRange.new(10 * config.speed)
         particleEmitter.Acceleration = Vector3.new(0, -5, 0)
-        particleEmitter.Color = ColorSequence.new(config.cor)
+        particleEmitter.Color = ColorSequence.new(config.color)
         particleEmitter.Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 0.5),
             NumberSequenceKeypoint.new(0.5, 0.3),
@@ -102,13 +99,13 @@ local function criarEfeitoRaios(character, config)
     if not character:FindFirstChild("Highlight") then
         local highlight = Instance.new("Highlight")
         highlight.Parent = character
-        highlight.FillColor = config.cor
+        highlight.FillColor = config.color
         highlight.OutlineColor = Color3.new(1, 1, 1)
         highlight.FillTransparency = 0.3
         highlight.OutlineTransparency = 0.1
     else
         local highlight = character.Highlight
-        highlight.FillColor = config.cor
+        highlight.FillColor = config.color
         highlight.OutlineColor = Color3.new(1, 1, 1)
         highlight.FillTransparency = 0.3
         highlight.OutlineTransparency = 0.1
@@ -124,7 +121,7 @@ local function criarEfeitoRaios(character, config)
                 info.Size = UDim2.new(1, -20, 0, 60)
                 info.Position = UDim2.new(0, 10, 0, 10)
                 info.BackgroundTransparency = 1
-                info.Text = "AUTO-ATTACK: teleporta para o jogador mais próximo e ataca automaticamente. Use o botão abaixo para ativar/desativar."
+                info.Text = "AUTO-ATTACK: teleports to the nearest player and attacks automatically. Use the button below to toggle."
                 info.Font = Enum.Font.SourceSans
                 info.TextSize = 14
                 info.TextColor3 = Color3.fromRGB(235,235,235)
@@ -138,13 +135,13 @@ local function criarEfeitoRaios(character, config)
                 toggleBtn.Parent = ContentFrame
                 toggleBtn.Size = UDim2.new(0, 220, 0, 36)
                 toggleBtn.Position = UDim2.new(1, -230, 0, 0)
-                toggleBtn.Text = (G.AUTO_ATTACK and "Desativar AUTO-ATTACK" or "Ativar AUTO-ATTACK")
+                toggleBtn.Text = (G.AUTO_ATTACK and "Disable AUTO-ATTACK" or "Enable AUTO-ATTACK")
                 toggleBtn.Font = Enum.Font.SourceSansBold
                 toggleBtn.TextSize = 14
                 toggleBtn.BackgroundColor3 = G.AUTO_ATTACK and Color3.fromRGB(0,120,0) or Color3.fromRGB(120,0,0)
                 stylizeBtn(toggleBtn)
 
-                local VELOCIDADE_CLICK = 0.1
+                local CLICK_SPEED = 0.1
 
                 local function getCharacter()
                     return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -192,7 +189,7 @@ local function criarEfeitoRaios(character, config)
                                     pcall(function() tool:Activate() end)
                                 end
 
-                                task.wait(VELOCIDADE_CLICK)
+                                task.wait(CLICK_SPEED)
                             else
                                 task.wait(0.25)
                             end
@@ -200,15 +197,15 @@ local function criarEfeitoRaios(character, config)
                     end)
 
                     task.spawn(function()
-                        local magias = {"Dark Flames", "Draedron's Tech", "Yoru", "Plasma Orbs", "Undead Staff","Sonic Barrage", "Rebound Rlast","sonic boom","Super Sonic Wave","Tesseract","Tesla Turret","Twin-Photon Blast","Hyper Slash","Photon Blast","Sonic Twister","Nuclear Spore","Pine Burst","Nature's Wrath","Warp Bomb","Time Trap","Tempo Beam","Fire Bomb","Comet","Combust","Fire Shower","Elysian Beam","Shadow Sword","Dark Hold"}
+                        local spells = {"Dark Flames", "Draedron's Tech", "Yoru", "Plasma Orbs", "Undead Staff","Sonic Barrage", "Rebound Blast","sonic boom","Super Sonic Wave","Tesseract","Tesla Turret","Twin-Photon Blast","Hyper Slash","Photon Blast","Sonic Twister","Nuclear Spore","Pine Burst","Nature's Wrath","Warp Bomb","Time Trap","Tempo Beam","Fire Bomb","Comet","Combust","Fire Shower","Elysian Beam","Shadow Sword","Dark Hold"}
                         while true do
                             if G.AUTO_ATTACK then
                                 if RemoteEvent then
-                                    local magiaSorteada = magias[math.random(1, #magias)]
+                                    local randomSpell = spells[math.random(1, #spells)]
                                     pcall(function()
-                                        RemoteEvent:FireServer("equip_mystery_spell", magiaSorteada)
+                                        RemoteEvent:FireServer("equip_mystery_spell", randomSpell)
                                         local mousePos = LocalPlayer:GetMouse().Hit.p
-                                        RemoteEvent:FireServer("cast_spell", magiaSorteada, mousePos)
+                                        RemoteEvent:FireServer("cast_spell", randomSpell, mousePos)
                                     end)
                                 end
                                 task.wait(1)
@@ -221,14 +218,14 @@ local function criarEfeitoRaios(character, config)
 
                 toggleBtn.MouseButton1Click:Connect(function()
                     G.AUTO_ATTACK = not G.AUTO_ATTACK
-                    toggleBtn.Text = (G.AUTO_ATTACK and "Desativar AUTO-ATTACK" or "Ativar AUTO-ATTACK")
+                    toggleBtn.Text = (G.AUTO_ATTACK and "Disable AUTO-ATTACK" or "Enable AUTO-ATTACK")
                     toggleBtn.BackgroundColor3 = G.AUTO_ATTACK and Color3.fromRGB(0,120,0) or Color3.fromRGB(120,0,0)
                     if G.AUTO_ATTACK then startLoops() end
                 end)
             end
-            criarEfeitoRaios(LocalPlayer.Character, EFEITOS_CONFIG[tipoEfeito])
+            createLightningEffect(LocalPlayer.Character, EFFECTS_CONFIG[effectType])
         else
-            removerEfeito(LocalPlayer.Character)
+            removeEffect(LocalPlayer.Character)
         end
     end
 end
